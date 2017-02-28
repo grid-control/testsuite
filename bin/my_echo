@@ -1,0 +1,8 @@
+#!/bin/sh
+
+EXIT=$1
+shift
+for VAR in $@; do
+	echo $VAR > /dev/stderr
+done
+exit $EXIT
