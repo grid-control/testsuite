@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/bin/cat > testfwk_timeleft
+/bin/cat testfwk_timeleft
