@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+import os, sys
+from ls_base import LS
+from mkdir_base import MKDIR
+
+
+def main():
+	cmd = None
+	if len(sys.argv) > 1:
+		cmd = sys.argv[1]
+		sys.argv = [sys.argv[0]] + sys.argv[2:]
+	if cmd == 'ls':
+		EOS_LS()
+	elif cmd == 'mkdir':
+		EOS_MKDIR()
+
+
+class EOS_LS(LS):
+	def __init__(self):
+		LS.__init__(self, lfn_prefix='/eos/dummy',
+			fmt_dir={'stat': 'drwxr-xr-x'}, fmt_file={'stat': '-rw-r--r--'})
+
+	def _handle(self, opts, args):
+		if not args:
+			path = self._base_dn
+		else:
+			path = args[0].replace(self._lfn_prefix, self._base_dn)
+
+		self._name_key = 'basename'
+		if opts.is_long:
+			self._fmt = '%(stat)s   1 root     root    %(size)13d Jan 01 00:00 %(name)s\n'
+		if (opts.dont_enter_dir or os.path.isfile(path)) and os.path.exists(path):
+			self._out(path)
+			return 0
+		elif os.path.isdir(path):
+			self._display_dir_content(opts, path)
+			return 0
+		self._err('Unable to stat %(lfn)s; No such file or directory (errc=2) ' +
+			'(No such file or directory)\n', path)
+		return 2
+
+	def _setup_opts(self, parser):
+		parser.add_option('-l', dest='is_long', action='store_true', default=False)
+		parser.add_option('-d', dest='dont_enter_dir', action='store_true', default=False)
+
+
+class EOS_MKDIR(MKDIR):
+	def __init__(self):
+		MKDIR.__init__(self, lfn_prefix='/eos/dummy', can_parent=True, on_noargs=(0, 'usage...\n'))
+
+	def _handle(self, opts, local_path, lfn):
+		if os.path.exists(local_path) and (os.path.isfile(local_path) or not opts.parents):
+			sys.stderr.write('error: unable to create directory (errc=17) (File exists)\n')
+			return 17
+		elif os.path.exists(local_path) and opts.parents:
+			return 0
+		try:
+			self._mkdir(opts, local_path)
+			return 0
+		except Exception:
+			sys.stderr.write('error: unable to create directory (errc=2) (No such file or directory)\n')
+			return 2
+
+main()
