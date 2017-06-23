@@ -1,0 +1,99 @@
+#!/bin/sh
+
+# alternative syntax: eos root://eosuser.cern.ch rm -r /eos/user/s/stober/gc_proc.pdf
+
+case "$@" in
+	# create dir
+	"mkdir /eos/user/s/stober/dir")
+	exit 0;;
+	# create dir without intermediaries
+	"mkdir /eos/user/s/stober/dir/1/2")
+	echo "error: unable to create directory (errc=2) (No such file or directory)" > &2
+	exit 2;;
+	# create parent dirs - always ok
+	"mkdir -p "*)
+	echo "error: unable to create directory (errc=2) (No such file or directory)" > &2
+	exit 0;;
+
+	# copy file to dir
+	"cp new_tape_deletion2.list /eos/user/s/stober")
+(
+cat << EOF
+[eos-cp] going to copy 1 files and 16.10 MB
+
+error: errc=0 msg=""
+error: filesize differ between source and target file!
+#WARNING [eos-cp] copied 0/1 files and 0 B in 0.03 seconds with 0 B/s
+EOF
+) > &2
+	exit 255;;
+	# copy local file to remote file (even existing file or with non-existing dirs)
+	"cp getEvents.sh /eos/user/s/stober/123")
+(
+cat << EOF
+[eos-cp] going to copy 1 files and 156 B
+
+[eoscp] getEvents.sh             Total 0.00 MB  |====================| 100.00 % [0.0 MB/s]
+[eos-cp] copied 1/1 files and 156 B in 0.26 seconds with 601 B/s
+EOF
+) > &2
+	exit 0;;
+	# copy non-existing remote file to local file
+	"cp /eos/user/s/stober/67/23234 test")
+cat << EOF
+target /afs/cern.ch/user/s/stober/test
+error: we don't support this protocol or we cannot get the file size of source file /eos/user/s/stober/67/23234
+EOF
+	exit 255;
+	# copy remote file to local file
+	"cp /eos/user/s/stober/67/3/4/gc 12312")
+cat << EOF
+target /afs/cern.ch/user/s/stober/12312
+[eos-cp] path=/eos/user/s/stober/67/3/4/gc size=3287426
+[eos-cp] going to copy 1 files and 3.29 MB
+[eoscp] gc                       Total 3.14 MB  |====================| 100.00 % [64.5 MB/s]
+[eos-cp] copied 1/1 files and 3.29 MB in 0.11 seconds with 29.49 MB/s
+EOF
+	exit 0;;
+
+	# ls existing path
+	"ls eos/user/s/stober/67/3/4" | "ls /eos/user/s/stober/67/3/4")
+	echo "gc"
+	exit 0;;
+	# ls existing path with -d
+	"ls -d eos/user/s/stober/67/3/4" | "ls -d /eos/user/s/stober/67/3/4")
+	echo "4"
+	exit 0;;
+	# ls existing path with -l
+	"ls -l eos/user/s/stober/67/3/4" | "ls -l /eos/user/s/stober/67/3/4")
+	echo "-rw-r-----   2 stober   zh            3287426 Apr 08 04:46 gc"
+	# ls existing path with -ld
+	"ls -ld eos/user/s/stober/67/3/4" | "ls -ld /eos/user/s/stober/67/3/4")
+	echo "drwx--s--+   1 stober   zh            9862278 Apr 08 04:42 4"
+	exit 0;;
+	# ls missing file
+	"ls eos/user/s/stober/missing" | "ls /eos/user/s/stober/missing" | "ls -s eos/user/s/stober/missing" | "ls -s /eos/user/s/stober/missing")
+	echo "Unable to stat /eos/user/s/stober/missing; No such file or directory (errc=2) (No such file or directory)" > &2
+	exit 2;;
+	# ls existence check on dir or file
+	"ls -s eos/user/s/stober" | "ls -s /eos/user/s/stober/4")
+	exit 0;;
+
+	# remove recursively on existing dir
+	"rm -r /eos/user/s/stober/67/3/4")
+	echo "success: you can recycle this deletion using 'recycle restore 0000000001d69030'" > &2
+	exit 0;;
+	# remove recursively on missing file
+	"rm -r /eos/user/s/stober/missing")
+	echo "error: no such file or directory with path '/eos/user/s/stober/121231' (errc=2) (No such file or directory)" > &2
+	exit 2;;
+	# remove on dir
+	"rm /eos/user/s/stober/dir")
+	echo "error: unable to remove file/directory '/eos/user/s/stober/dir' (errc=21) (Is a directory)" > &2
+	exit 2;;
+	# remove existing file
+	"rm /eos/user/s/stober/gc")
+	exit 0;;
+
+esac
+exit -1
