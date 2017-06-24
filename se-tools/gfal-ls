@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+import os, sys
+from ls_base import LS
+
+
+class GFAL_LS(LS):
+	def __init__(self):
+		LS.__init__(self, lfn_prefix='/pnfs/dummy',
+			fmt_dir={'stat': 'drwxr-xr-x'}, fmt_file={'stat': '-rw-r--r--'})
+
+	def _handle(self, opts, args):
+		if not args:
+			sys.stderr.write('usage...\n')
+			return 1
+
+		srm_prefix = 'srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN='
+		if not args[0].startswith(srm_prefix + self._lfn_prefix):
+			sys.stderr.write('[GFAL][get_se_types_and_endpoints][] ' +
+				'[BDII][g1_sd_get_se_types_and_endpoints]: No available information\n')
+			return 1
+		path = args[0].replace(srm_prefix + self._lfn_prefix, self._base_dn)
+
+		if opts.is_long:
+			self._fmt = '%(stat)s   1 46    45    %(size)9d Jan 01 00:00 %(name)s\n'
+		if (opts.dont_enter_dir or os.path.isfile(path)) and os.path.exists(path):
+			self._name_key = 'turl'
+			self._turl_prefix = args[0]
+			self._out(path)
+			return 0
+		elif os.path.isdir(path):
+			self._name_key = 'basename'
+			self._display_dir_content(opts, path)
+			return 0
+		self._err('gfal-ls error: 2 (No such file or directory) - Error reported from srm_ifce :' +
+			' 2 [SE][Ls][SRM_INVALID_PATH] No such file or directory %(lfn)s\n', path)
+		return 2
+
+	def _setup_opts(self, parser):
+		parser.add_option('-l', dest='is_long', action='store_true', default=False)
+		parser.add_option('-d', dest='dont_enter_dir', action='store_true', default=False)
+
+GFAL_LS()
