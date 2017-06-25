@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+import os, sys
+from ls_base import LS
+
+
+class LCG_LS(LS):
+	def __init__(self):
+		LS.__init__(self, lfn_prefix='/pnfs/dummy',
+			fmt_dir={'stat': 'drwxr-xr-x', 'state': 'UNKNOWN', 'checksum': ' ()'},
+			fmt_file={'stat': 'mrw-r--r--', 'state': 'ONLINE', 'checksum': 'f3d908cd (adler32)'})
+
+	def _handle(self, opts, args):
+		if not args:
+			sys.stderr.write('usage...\n')
+			return 1
+		if opts.no_bdii and not opts.setype:
+			sys.stderr.write('[GFAL][gfal_init][EINVAL] Invalid request: ' +
+				'When BDII checks are disabled, you must provide SURLs and endpoint types\n')
+			return 1
+		if opts.setype not in (None, 'srmv2'):
+			sys.stderr.write('Invalid SE type: %s\nusage...\n' % opts.setype)
+			return 1
+
+		ftp_prefix = 'gsiftp://dcache-se-cms.desy.de:8443/srm/managerv2?SFN='
+		srm_prefix = 'srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN='
+		if not (args[0].startswith(srm_prefix + self._lfn_prefix) or
+				args[0].startswith(ftp_prefix + self._lfn_prefix)):
+			sys.stderr.write('[GFAL][get_se_types_and_endpoints][] ' +
+				'[BDII][g1_sd_get_se_types_and_endpoints]: No available information\n')
+			return 1
+		path = args[0].replace(ftp_prefix + self._lfn_prefix, self._base_dn)
+		path = args[0].replace(srm_prefix + self._lfn_prefix, self._base_dn)
+
+		self._name_key = 'lfn'
+		if opts.is_long:
+			self._fmt = '%(stat)s   1     1     2     %(size)-15d  %(state)-7s %(name)s\n' + \
+				'        * Checksum: %(checksum)s\n'
+		if opts.dont_enter_dir or os.path.isfile(path) and os.path.exists(path):
+			self._out(path)
+			return 0
+		elif os.path.isdir(path):
+			self._display_dir_content(opts, path)
+			return 0
+		self._err('%(name)s: [SE][Ls][SRM_INVALID_PATH] No such file or directory %(name)s\n', args[0])
+		return 1
+
+	def _setup_opts(self, parser):
+		parser.add_option('-l', dest='is_long', action='store_true', default=False)
+		parser.add_option('-d', dest='dont_enter_dir', action='store_true', default=False)
+		parser.add_option('-b', '--nobdii', dest='no_bdii', action='store_true', default=False)
+		parser.add_option('-T', '--setype', dest='setype', default=None)
+
+LCG_LS()
