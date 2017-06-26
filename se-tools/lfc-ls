@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+import os, sys
+from ls_base import LS
+
+
+class LFC_LS(LS):
+	def __init__(self):
+		LS.__init__(self, lfn_prefix='/grid/dummy',
+			fmt_dir={'stat': 'drwxr-xr-x'},
+			fmt_file={'stat': '-rw-r--r--'})
+
+	def _handle(self, opts, args):
+		if opts.is_long:
+			self._fmt = '%(stat)s   1 105      102    %(size)20d Jan 01  2000 %(name)s\n'
+		if not args:
+			sys.stderr.write('usage...\n')
+			return 1
+
+		path = args[0].replace(self._lfn_prefix, self._base_dn)
+		if (opts.dont_enter_dir or os.path.isfile(path)) and os.path.exists(path):
+			self._name_key = 'lfn'
+			self._out(path)
+			return 0
+		elif os.path.isdir(path):
+			self._name_key = 'basename'
+			self._display_dir_content(opts, path)
+			return 0
+		self._err('%(lfn)s: No such file or directory\n', args[0])
+		return 1
+
+	def _setup_opts(self, parser):
+		parser.add_option('-l', dest='is_long', action='store_true', default=False)
+		parser.add_option('-d', dest='dont_enter_dir', action='store_true', default=False)
+
+LFC_LS()
