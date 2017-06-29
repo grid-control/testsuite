@@ -1,0 +1,56 @@
+#!/bin/sh
+
+case "$@" in
+	"")
+	echo "Try \`nsgetacl --help\` for more information." >&2
+	exit 1;;
+	# existing relative file
+	"MyProd_15_0.root")
+cat << EOF
+# file: MyProd_15_0.root
+# owner: stober
+# group: zh
+user::rw-
+group::r--              #effective:r--
+other::r--
+EOF
+	exit 0;;
+	# existing absolute file
+	"/castor/cern.ch/user/s/stober/MyProd_15_0.root")
+cat << EOF
+# file: /castor/cern.ch/user/s/stober/MyProd_15_0.root
+# owner: stober
+# group: zh
+user::rw-
+group::r--              #effective:r--
+other::r--
+EOF
+	exit 0;;
+	# absolute dir no / at the end
+	"/castor/cern.ch/user/s/stober")
+cat << EOF
+# file: /castor/cern.ch/user/s/stober
+# owner: stober
+# group: zh
+user::rwx
+group::r--              #effective:r--
+other::r--
+EOF
+	exit 0;;
+	# absolute dir with / at the end
+	"/castor/cern.ch/user/s/stober/")
+cat << EOF
+# file: /castor/cern.ch/user/s/stober/
+# owner: stober
+# group: zh
+user::rwx
+group::r--              #effective:r--
+other::r--
+EOF
+	exit 0;;
+	# missing file or wildcard
+	"MyProd*.root")
+	echo "MyProd*.root: No such file or directory" >&2
+	exit 1;;
+esac
+exit -1
