@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+import os
+from ls_base import LS
+
+
+class NS_LS(LS):
+	def __init__(self):
+		LS.__init__(self, lfn_prefix='/castor/dummy',
+			fmt_dir={'stat': 'drwxr-xr-x'}, fmt_file={'stat': 'mrw-r--r--'})
+
+	def _handle(self, opts, args):
+		if opts.dont_enter_dir:
+			self._name_key = 'lfn'
+		else:
+			self._name_key = 'basename'
+
+		if not args:
+			if opts.dont_enter_dir:
+				self._out(self._base_dn)
+			else:
+				self._display_dir_content(opts, self._base_dn)
+			return 0
+
+		if args[0].startswith(self._lfn_prefix):
+			path = args[0].replace(self._lfn_prefix, self._base_dn)
+		else:
+			path = os.path.join(self._base_dn, args[0])
+
+		if opts.is_long:
+			self._fmt = '%(stat)s   1 stober   zh     %(size)20s Jan 01  2000 %(name)s\n'
+
+		if (opts.dont_enter_dir or os.path.isfile(path)) and os.path.exists(path):
+			self._out(path)
+			return 0
+		elif os.path.isdir(path):
+			self._display_dir_content(opts, path)
+			return 0
+		self._err('%(name)s: No such file or directory\n', args[0])
+		return 1
+
+NS_LS()
