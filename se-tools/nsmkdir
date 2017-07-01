@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import os, sys
+from mkdir_base import MKDIR
+
+
+class NS_MKDIR(MKDIR):
+	def __init__(self):
+		MKDIR.__init__(self, lfn_prefix='/castor/dummy', can_parent=True, on_noargs=(1, 'usage...\n'))
+
+	def _handle(self, opts, local_path, lfn):
+		if os.path.exists(local_path) and (os.path.isfile(local_path) or not opts.parents):
+			sys.stderr.write('cannot create %s: File exists\n' % lfn)
+			return 1
+		elif os.path.exists(local_path) and opts.parents:
+			return 0
+		try:
+			self._mkdir(opts, local_path)
+			return 0
+		except Exception:
+			sys.stderr.write('cannot create %s: No such file or directory\n' % lfn)
+			return 1
+
+
+NS_MKDIR()
