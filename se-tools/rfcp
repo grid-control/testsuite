@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case "$@" in
+	# copy castor path to local file (or vice versa)
+	"/castor/cern.ch/user/s/stober/MyProd_15_0.root 123")
+cat << EOF
+1065 bytes in 0 seconds through local (in) and local (out)
+1065 bytes in remote file
+EOF
+	exit 0;;
+	# copy missing file
+	"/castor/cern.ch/user/s/stober/ 123")
+	echo "file /castor/cern.ch/user/s/stober/: Not a regular file" >&2
+	exit 130;;
+esac
+exit -1
