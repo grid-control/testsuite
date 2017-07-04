@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+import os, sys
+from ls_base import LS
+
+
+class SRM_LS(LS):
+	def __init__(self):
+		LS.__init__(self, lfn_prefix='/pnfs/dummy',
+			fmt_dir={'perm': 'RX', 'locality': 'NONE', 'ftype': 'DIRECTORY',
+				'checksum_value': '', 'checksum_type': ''},
+			fmt_file={'perm': 'R', 'locality': 'ONLINE', 'ftype': 'FILE',
+				'checksum_value': 'f3d908cd', 'checksum_type': 'adler32'})
+
+	def _handle(self, opts, args):
+		if not args:
+			sys.stderr.write('usage...\n')
+			return 1
+
+		srm_prefix = 'srm://dcache-se-cms.desy.de:8443/srm/managerv2?SFN='
+		if not args[0].startswith(srm_prefix + self._lfn_prefix):
+			sys.stderr.write('srm client error:\njava.lang.IllegalArgumentException:\nusage...\n')
+			return 1
+		path = args[0].replace(srm_prefix + self._lfn_prefix, self._base_dn)
+
+		self._name_key = 'lfn'
+		if opts.is_long:
+			self._fmt = '  %(size)7d %(name)s\n space token(s) :none found\n  storage type:PERMANENT\n' + \
+				'  retention policy:CUSTODIAL\n  access latency:NEARLINE\n  locality:%(locality)s\n' + \
+				'  - Checksum value:  %(checksum_value)s\n  - Checksum type:  %(checksum_type)s\n' + \
+				'   UserPermission: uid=40751 Permissions%(perm)s\n' + \
+				'   GroupPermission: gid=4075 Permissions%(perm)s\n  WorldPermission: %(perm)s\n' + \
+				' created at:2000/01/01 00:00:00\n modified at:2000/01/01 00:00:00\n' + \
+				'   - Assigned lifetime (in seconds):  -1\n  - Lifetime left (in seconds):  -1\n' + \
+				'  - Original SURL:  %(name)s\n - Status:  null\n - Type:  %(ftype)s\n'
+		else:
+			self._fmt = '  %(size)7d %(name)s\n'
+
+		if os.path.isfile(path) and os.path.exists(path):
+			self._out(path)
+			return 0
+		elif os.path.isdir(path):
+			self._out(path)
+			self._display_dir_content(opts, path)
+			return 0
+		self._err('Sun Jan 01 00:00:00 CEST 2000: Return status:\n - Status code:  SRM_FAILURE\n' +
+			' - Explanation:  All ls requests failed in some way or another\n' +
+			'SRM_INVALID_PATH   File/directory 0 %(name)s does not exist. \n\n', path)
+		return 1
+
+	def _setup_opts(self, parser):
+		parser.add_option('-l', dest='is_long', action='store_true', default=False)
+
+SRM_LS()
