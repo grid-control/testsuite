@@ -1,0 +1,17 @@
+#!/bin/sh
+
+case "$@" in
+	# copy with single / between host and path
+	"root://eosuser.cern.ch/eos/user/s/stober/gc_proc.pdf /tmp/proc")
+cat << EOF
+[0B/0B][100%][==================================================][0B/s]  
+Run: [ERROR] Server responded with an error: [3010] Opening relative path 'eos/user/s/stober/gc_proc.pdf' is disallowed.
+
+EOF
+	exit 54;;
+	# copy with double / between host and path
+	"root://eosuser.cern.ch//eos/user/s/stober/gc_proc.pdf /tmp/proc")
+	echo "[374.6kB/374.6kB][100%][==================================================][374.6kB/s]"
+	exit 0;;
+esac
+exit -1
