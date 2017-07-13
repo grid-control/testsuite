@@ -383,7 +383,7 @@ class Test_SimpleParameterFactory:
 	3
 	{'!FMT': 5, 'VAR': '1'} {'!FMT': 6, 'VAR': '2'} {'!FMT': 7, 'VAR': '3'}
 
-	>>> testSPF('VAR, FMT', VAR = '1 2 3', FMT = 'VAR', FMT_type = 'regex_transform', FMT_transform = '2 => 5', FMT_default = 'X')
+	>>> testSPF('VAR, FMT', VAR = '1 2 3', FMT = '2 => 5', FMT_type = 'regex_transform', FMT_parse_dict = 'False', FMT_source = 'VAR', FMT_default = 'X')
 	3
 	{'!FMT': 'X', 'VAR': '1'} {'!FMT': '5', 'VAR': '2'} {'!FMT': 'X', 'VAR': '3'}
 

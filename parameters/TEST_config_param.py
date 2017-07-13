@@ -3,7 +3,7 @@ __import__('sys').path.append(__import__('os').path.join(__import__('os').path.d
 __import__('testfwk').setup(__file__)
 # - prolog marker
 from testfwk import cmp_obj, create_config, run_test, try_catch
-from grid_control.parameters.config_param import ParameterConfig, frange, parse_parameter_option, parse_tuple
+from grid_control.parameters.pconfig import ParameterConfig, frange, parse_parameter_option, parse_tuple
 from hpfwk import Plugin
 
 

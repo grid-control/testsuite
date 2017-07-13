@@ -150,7 +150,8 @@ def setup(fn, term='gc_color256'):
 	add_path(os.path.join(os.path.dirname(__file__), '..', 'packages'))  # gc dir (pip installed)
 	add_path(dn_fn)  # test dir
 	add_path(dir_testsuite)  # testsuite base dir
-	__import__('hpfwk')  # to properly setup HPF_STARTUP_DIRECTORY
+	hpfwk = __import__('hpfwk')  # to properly setup HPF_STARTUP_DIRECTORY
+	hpfwk.init_hpf_plugins(os.path.join(dir_testsuite, 'grid_control_tests'))
 	os.chdir(dn_fn)
 	if term is not None:
 		os.environ['GC_TERM'] = term
