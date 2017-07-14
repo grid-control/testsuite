@@ -60,7 +60,7 @@ echo 'travis_fold:end:scripts_report'
 
 echo 'travis_fold:start:scripts_dataset_info'
 travis_run ./scripts/dataset_info.py | echo
-travis_run ./scripts/dataset_info.py -QNlbfsmMOcnT -C docs/examples/Example02_local.conf -S tmp testsuite/datasets/dataK.dbs testsuite/datasets/dataE.dbs
+travis_run ./scripts/dataset_info.py -QNlbfsmMOcnT 0 -C docs/examples/Example02_local.conf -S tmp testsuite/datasets/dataK.dbs testsuite/datasets/dataE.dbs
 travis_run ./scripts/dataset_info.py -smM testsuite/datasets/dataE.dbs
 echo 'travis_fold:end:scripts_dataset_info'
 
