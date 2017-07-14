@@ -1,5 +1,6 @@
 #!/bin/sh
 
+set -e
 cd "$(dirname $0)/.."
 export GC_WRAPPER="$1"
 export GC_SCRIPT="$2"
@@ -8,8 +9,10 @@ export GC_CHECK_OUTPUT=true
 echo > gc_debug_stack.log
 
 travis_run() {
-	echo "$@"
+	echo "Running $@"
 	$GC_WRAPPER "$@"
+	EXITCODE="$?"
+	if [ "$EXITCODE" = "0" ]; then echo "$@ failed with $EXITCODE"; fi
 }
 
 echo 'travis_fold:start:stress_test_basic'

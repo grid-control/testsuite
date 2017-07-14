@@ -1,11 +1,14 @@
 #!/bin/sh
 
+set -e
 cd "$(dirname $0)/.."
 export GC_WRAPPER="$1"
 
 travis_run() {
-	echo "$@"
+	echo "Running $@"
 	$GC_WRAPPER "$@"
+	EXITCODE="$?"
+	if [ "$EXITCODE" = "0" ]; then echo "$@ failed with $EXITCODE"; fi
 }
 
 echo 'travis_fold:start:testsuite_backend'
