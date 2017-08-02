@@ -42,6 +42,7 @@ travis_run ./scripts/parameter_info.py "A B <data>" -D True -p "A=1 2 3" -p "B=x
 travis_run ./scripts/parameter_info.py docs/examples/ExampleS1_stresstest.conf -TlcLv -D docs/examples/work.ExampleS1_stresstest/datamap.tar
 travis_run ./scripts/parameter_info.py 'A' -p 'A = 1 2' -ltdT -V A
 travis_run ./scripts/parameter_info.py 'A' -p 'A = 3 2' -ltdT
+rm param.gz
 echo 'travis_fold:end:scripts_parameter_info'
 
 echo 'travis_fold:start:scripts_dataset_list_from'
@@ -49,6 +50,7 @@ travis_run_noerr ./scripts/dataset_list_from_gc.py
 travis_run ./scripts/dataset_list_from_gc.py docs/examples/ExampleS1_stresstest.conf --dump-config
 travis_run ./scripts/dataset_list_from_gc.py docs/examples/ExampleS1_stresstest.conf -i OutputDirsFromConfig,JobInfoFromOutputDir,FilesFromJobInfo -d @SE_OUTPUT_FILE@
 travis_run ./scripts/dataset_list_from_gc.py docs/examples/ExampleS1_stresstest.conf -s '*' -D'.:-1:' -d '@DELIMETER_DS@' -o output.dbs
+rm output.dbs
 travis_run ./scripts/dataset_list_from_ls.py -D '_:1:2'
 echo 'travis_fold:end:scripts_dataset_list_from'
 
@@ -74,7 +76,8 @@ echo 'travis_fold:end:scripts_report'
 
 echo 'travis_fold:start:scripts_dataset_info'
 travis_run ./scripts/dataset_info.py | echo
-travis_run ./scripts/dataset_info.py -QNlbfsmMOcnT 0 -C docs/examples/Example02_local.conf -S tmp testsuite/datasets/dataK.dbs testsuite/datasets/dataE.dbs
+travis_run ./scripts/dataset_info.py -QNlbfsmMOcnT 0 -C docs/examples/Example02_local.conf -S tmp.dbs testsuite/datasets/dataK.dbs testsuite/datasets/dataE.dbs
+rm tmp.dbs
 travis_run ./scripts/dataset_info.py -smM testsuite/datasets/dataE.dbs
 echo 'travis_fold:end:scripts_dataset_info'
 
@@ -97,6 +100,7 @@ travis_run $SE_OUTPUT_DOWNLOAD_EXEC docs/examples/ExampleS2_stresscms3.conf -J 1
 travis_run $SE_OUTPUT_DOWNLOAD_EXEC docs/examples/ExampleS2_stresscms3.conf -J 1,2 --mark-empty-fail
 echo "print(__import__(\"os\").path.dirname(__import__(\"grid_control_gui\").__file__))" > locate_gui.py
 export GUI_PACKAGE_DIR=$(python locate_gui.py)
+rm locate_gui.py
 mv $GUI_PACKAGE_DIR tmp_gui
 travis_run $SE_OUTPUT_DOWNLOAD_EXEC docs/examples/ExampleS1_stresstest.conf -J 1,2 -j -t 2 --no-verify-md5
 mv tmp_gui $GUI_PACKAGE_DIR
