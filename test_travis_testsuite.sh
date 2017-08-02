@@ -1,14 +1,19 @@
 #!/bin/sh
 
-set -e
 cd "$(dirname $0)/.."
 export GC_WRAPPER="$1"
+export GC_RESULT=0
 
 travis_run() {
 	echo "Running $@"
 	$GC_WRAPPER "$@"
 	EXITCODE="$?"
-	if [ "$EXITCODE" = "0" ]; then echo "$@ failed with $EXITCODE"; fi
+	if [ "$EXITCODE" = "0" ]; then
+		echo "$@ - ok";
+	else
+		echo "$@ - test failed with $EXITCODE";
+		GC_RESULT=1
+	fi
 }
 
 echo 'travis_fold:start:testsuite_backend'
@@ -98,3 +103,5 @@ export GC_TERM=dumb; travis_run ./testsuite/TEST_ansi.py
 export GC_TERM=gc_color16; travis_run ./testsuite/TEST_ansi.py
 export GC_TERM=gc_color256; travis_run ./testsuite/TEST_ansi.py
 echo 'travis_fold:end:testsuite_ansi'
+
+exit $GC_RESULT

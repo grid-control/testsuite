@@ -1,30 +1,41 @@
 #!/bin/sh
 
-set -e
 cd "$(dirname $0)/.."
 export GC_WRAPPER="$1"
+export GC_RESULT=0
 
 travis_run() {
 	echo "Running $@"
 	$GC_WRAPPER "$@"
 	EXITCODE="$?"
-	if [ "$EXITCODE" = "0" ]; then echo "$@ failed with $EXITCODE"; fi
+	if [ "$EXITCODE" = "0" ]; then
+		echo "$@ - ok";
+	else
+		echo "$@ - test failed with $EXITCODE";
+		export GC_RESULT=1
+	fi
+}
+
+travis_run_noerr() {
+	echo "Running $@"
+	$GC_WRAPPER "$@"
+	echo "$@ - ok";
 }
 
 echo 'travis_fold:start:scripts_dataset_nick'
-travis_run ./scripts/dataset_nick.py || echo
+travis_run_noerr ./scripts/dataset_nick.py
 travis_run ./scripts/dataset_nick.py /TEST/DATASET -L
 travis_run ./scripts/dataset_nick.py testsuite/datasets/dataA.dbs -L
 echo 'travis_fold:end:scripts_dataset_nick'
 
 echo 'travis_fold:start:scripts_se_output_md5_list'
-travis_run ./scripts/se_output_md5_list.py || echo
-travis_run ./scripts/se_output_md5_list.py docs/examples/ExampleS1_stresstest.conf id:x || echo
+travis_run_noerr ./scripts/se_output_md5_list.py
+travis_run_noerr ./scripts/se_output_md5_list.py docs/examples/ExampleS1_stresstest.conf id:x
 travis_run ./scripts/se_output_md5_list.py docs/examples/ExampleS1_stresstest.conf nick:Dataset2_changed
 echo 'travis_fold:end:scripts_se_output_md5_list'
 
 echo 'travis_fold:start:scripts_parameter_info'
-travis_run ./scripts/parameter_info.py || echo
+travis_run_noerr ./scripts/parameter_info.py
 travis_run ./scripts/parameter_info.py -l 'A' -p 'A=123' -j 321 -S param.gz -vvvta --parseable
 travis_run ./scripts/parameter_info.py -l 'var("A")' -p 'A=123 456' -F modular --parseable
 travis_run ./scripts/parameter_info.py "A B <data>" -D True -p "A=1 2 3" -p "B=x y" -lcc --logging INFO2
@@ -34,7 +45,7 @@ travis_run ./scripts/parameter_info.py 'A' -p 'A = 3 2' -ltdT
 echo 'travis_fold:end:scripts_parameter_info'
 
 echo 'travis_fold:start:scripts_dataset_list_from'
-travis_run ./scripts/dataset_list_from_gc.py || echo
+travis_run_noerr ./scripts/dataset_list_from_gc.py
 travis_run ./scripts/dataset_list_from_gc.py docs/examples/ExampleS1_stresstest.conf --dump-config
 travis_run ./scripts/dataset_list_from_gc.py docs/examples/ExampleS1_stresstest.conf -i OutputDirsFromConfig,JobInfoFromOutputDir,FilesFromJobInfo -d @SE_OUTPUT_FILE@
 travis_run ./scripts/dataset_list_from_gc.py docs/examples/ExampleS1_stresstest.conf -s '*' -D'.:-1:' -d '@DELIMETER_DS@' -o output.dbs
@@ -42,11 +53,11 @@ travis_run ./scripts/dataset_list_from_ls.py -D '_:1:2'
 echo 'travis_fold:end:scripts_dataset_list_from'
 
 echo 'travis_fold:start:scripts_report_lumi'
-travis_run ./scripts/report_lumi.py -j || echo
-travis_run ./scripts/report_lumi.py -G || echo
-travis_run ./scripts/report_lumi.py -G x || echo
-travis_run ./scripts/report_lumi.py -F 1-2 || echo
-travis_run ./scripts/report_lumi.py -J 1-2 || echo
+travis_run_noerr ./scripts/report_lumi.py -j
+travis_run_noerr ./scripts/report_lumi.py -G
+travis_run_noerr ./scripts/report_lumi.py -G x
+travis_run_noerr ./scripts/report_lumi.py -F 1-2
+travis_run_noerr ./scripts/report_lumi.py -J 1-2
 travis_run ./scripts/report_lumi.py -GJF 123:1-123:10
 travis_run ./scripts/report_lumi.py -gjep docs/examples/ExampleS2_stresscms1.conf
 travis_run ./scripts/report_lumi.py -gje docs/examples/ExampleS2_stresscms2.conf
@@ -69,7 +80,7 @@ echo 'travis_fold:end:scripts_dataset_info'
 
 echo 'travis_fold:start:scripts_se_download'
 export SE_OUTPUT_DOWNLOAD_EXEC="./scripts/se_output_download.py -T trivial --slowdown=0 --parseable"
-travis_run $SE_OUTPUT_DOWNLOAD_EXEC || echo
+travis_run_noerr $SE_OUTPUT_DOWNLOAD_EXEC
 travis_run $SE_OUTPUT_DOWNLOAD_EXEC docs/examples/ExampleS2_stresscms2.conf -m --select-se tmx
 travis_run $SE_OUTPUT_DOWNLOAD_EXEC docs/examples/ExampleS2_stresscms2.conf -J 1,2 -m -t 2
 travis_run $SE_OUTPUT_DOWNLOAD_EXEC docs/examples/ExampleS2_stresscms2.conf -J 1,2 -m --shuffle
@@ -92,8 +103,10 @@ mv tmp_gui $GUI_PACKAGE_DIR
 echo 'travis_fold:end:scripts_se_download'
 
 echo 'travis_fold:start:scripts_plugin'
-travis_run ./scripts/plugins.py || echo
+travis_run_noerr ./scripts/plugins.py
 travis_run ./scripts/plugins.py --parseable WMS
 travis_run ./scripts/plugins.py -p WMS
 travis_run ./scripts/plugins.py -c WMS
 echo 'travis_fold:end:scripts_plugin'
+
+exit $GC_RESULT

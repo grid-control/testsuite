@@ -1,9 +1,9 @@
 #!/bin/sh
 
-set -e
 cd "$(dirname $0)/.."
 export GC_WRAPPER="$1"
 export GC_SCRIPT="$2"
+export GC_RESULT=0
 if [ -z "$GC_SCRIPT" ]; then export GC_SCRIPT="go.py"; fi
 export GC_CHECK_OUTPUT=true
 echo > gc_debug_stack.log
@@ -12,7 +12,12 @@ travis_run() {
 	echo "Running $@"
 	$GC_WRAPPER "$@"
 	EXITCODE="$?"
-	if [ "$EXITCODE" = "0" ]; then echo "$@ failed with $EXITCODE"; fi
+	if [ "$EXITCODE" = "0" ]; then
+		echo "$@ - ok";
+	else
+		echo "$@ - test failed with $EXITCODE";
+		export GC_RESULT=1
+	fi
 }
 
 echo 'travis_fold:start:stress_test_basic'
@@ -48,3 +53,5 @@ travis_run $GC_SCRIPT docs/examples/ExampleS2_stresscms3.conf -cm 1
 travis_run $GC_SCRIPT docs/examples/ExampleS2_stresscms3.conf
 diff ExampleS2_stresscms3.list docs/examples/ExampleS2_stresscms3.list.ref
 echo 'travis_fold:end:stress_test_cms_3'
+
+exit $GC_RESULT
