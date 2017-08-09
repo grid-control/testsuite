@@ -13,20 +13,20 @@ class TestLocalEventHandler(LocalEventHandler):
 	def _display(self, args):
 		print(repr(args))
 
-	def on_job_state_change(self, job_db_len, jobnum, job_obj, old_state, new_state, reason=None):
+	def on_job_state_change(self, task, job_db_len, jobnum, job_obj, old_state, new_state, reason=None):
 		self._display(['on_job_state_change', job_db_len, jobnum,
 			Job.enum2str(old_state), Job.enum2str(new_state), reason])
 
-	def on_job_submit(self, wms, job_obj, jobnum):
+	def on_job_submit(self, task, wms, job_obj, jobnum):
 		self._display(['on_job_submit', jobnum, Job.enum2str(job_obj.state)])
 
-	def on_job_update(self, wms, job_obj, jobnum, data):
+	def on_job_update(self, task, wms, job_obj, jobnum, data):
 		self._display(['on_job_update', jobnum, Job.enum2str(job_obj.state), data])
 
-	def on_job_output(self, wms, job_obj, jobnum, exit_code):
+	def on_job_output(self, task, wms, job_obj, jobnum, exit_code):
 		self._display(['on_job_output', jobnum, Job.enum2str(job_obj.state), exit_code])
 
-	def on_task_finish(self, job_len):
+	def on_task_finish(self, task, job_len):
 		self._display(['on_task_finish', job_len])
 
 	def on_workflow_finish(self):
@@ -51,53 +51,53 @@ class Test_LocalEventHandler:
 	Current task ID: GC0000000000
 	Task started on: 0000-00-00
 	Using batch system: ---
-	>>> m1 = TestLocalEventHandler(config, 'm1', workflow.task)
-	>>> m2 = LocalEventHandler(config, 'm2', workflow.task)
-	>>> m = MultiLocalEventHandler(config, 'mon', [m1, m2], workflow.task)
-	>>> m.on_job_state_change(123, 12, Job(), Job.DONE, Job.SUCCESS, 'status update')
+	>>> m1 = TestLocalEventHandler(config, 'm1')
+	>>> m2 = LocalEventHandler(config, 'm2')
+	>>> m = MultiLocalEventHandler(config, 'mon', [m1, m2])
+	>>> m.on_job_state_change(workflow.task, 123, 12, Job(), Job.DONE, Job.SUCCESS, 'status update')
 	['on_job_state_change', 123, 12, 'DONE', 'SUCCESS', 'status update']
-	>>> m.on_job_submit(None, Job(), 123)
+	>>> m.on_job_submit(workflow.task, None, Job(), 123)
 	['on_job_submit', 123, 'INIT']
-	>>> m.on_job_update(None, Job(), 123, {'key': 'value'})
+	>>> m.on_job_update(workflow.task, None, Job(), 123, {'key': 'value'})
 	['on_job_update', 123, 'INIT', {'key': 'value'}]
-	>>> m.on_job_output(None, Job(), 123, 321)
+	>>> m.on_job_output(workflow.task, None, Job(), 123, 321)
 	['on_job_output', 123, 'INIT', 321]
-	>>> m.on_task_finish(42)
+	>>> m.on_task_finish(workflow.task, 42)
 	['on_task_finish', 42]
 	>>> m.on_workflow_finish()
 	['on_workflow_finish']
 
-	>>> bleh = LocalEventHandler.create_instance('BasicLogEventHandler', config, 'bleh', workflow.task)
+	>>> bleh = LocalEventHandler.create_instance('BasicLogEventHandler', config, 'bleh')
 	>>> job = Job()
 	>>> job.assign_id('WMS.HOST.1234')
-	>>> bleh.on_job_state_change(123, 12, job, Job.DONE, Job.SUCCESS, 'reason')
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.DONE, Job.SUCCESS, 'reason')
 	0000-00-00 00:00:00 - Job 12  state changed from DONE to SUCCESS (reason) (WMS:HOST)
 	>>> job.set('runtime', 123)
-	>>> bleh.on_job_state_change(123, 12, job, Job.DONE, Job.SUCCESS, 'reason')
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.DONE, Job.SUCCESS, 'reason')
 	0000-00-00 00:00:00 - Job 12  state changed from DONE to SUCCESS (reason) (WMS:HOST) (runtime 0h 02min 03sec)
 	>>> job.attempt = 1
-	>>> bleh.on_job_state_change(123, 12, job, Job.INIT, Job.SUBMITTED)
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.INIT, Job.SUBMITTED)
 	0000-00-00 00:00:00 - Job 12  state changed from INIT to SUBMITTED (WMS:HOST)
 	>>> job.attempt = 2
-	>>> bleh.on_job_state_change(123, 12, job, Job.INIT, Job.SUBMITTED)
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.INIT, Job.SUBMITTED)
 	0000-00-00 00:00:00 - Job 12  state changed from INIT to SUBMITTED (WMS:HOST) (retry #1)
 	>>> job.attempt = 43
-	>>> bleh.on_job_state_change(123, 12, job, Job.INIT, Job.SUBMITTED)
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.INIT, Job.SUBMITTED)
 	0000-00-00 00:00:00 - Job 12  state changed from INIT to SUBMITTED (WMS:HOST) (retry #42)
 	>>> job.set('QUEUE', 'somequeue')
-	>>> bleh.on_job_state_change(123, 12, job, Job.INIT, Job.QUEUED)
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.INIT, Job.QUEUED)
 	0000-00-00 00:00:00 - Job 12  state changed from INIT to QUEUED (WMS:HOST) (somequeue)
 	>>> job.set('SITE', 'somesite')
-	>>> bleh.on_job_state_change(123, 12, job, Job.INIT, Job.QUEUED)
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.INIT, Job.QUEUED)
 	0000-00-00 00:00:00 - Job 12  state changed from INIT to QUEUED (WMS:HOST) (somesite/somequeue)
 	>>> job.set('reason', 'walltime')
-	>>> bleh.on_job_state_change(123, 12, job, Job.INIT, Job.ABORTED)
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.INIT, Job.ABORTED)
 	0000-00-00 00:00:00 - Job 12  state changed from INIT to ABORTED (WMS:HOST) (walltime)
 	>>> job.set('retcode', 101)
-	>>> bleh.on_job_state_change(123, 12, job, Job.INIT, Job.FAILED)
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.INIT, Job.FAILED)
 	0000-00-00 00:00:00 - Job 12  state changed from INIT to FAILED (WMS:HOST) (error code: 101 - somesite/somequeue - runtime 0h 02min 03sec)
 	>>> logging.getLogger('jobs').setLevel(logging.DEBUG)
-	>>> bleh.on_job_state_change(123, 12, job, Job.INIT, Job.FAILED)
+	>>> bleh.on_job_state_change(workflow.task, 123, 12, job, Job.INIT, Job.FAILED)
 	0000-00-00 00:00:00 - Job 12  state changed from INIT to FAILED (WMS:HOST) (error code: 101 - file not found - somesite/somequeue - runtime 0h 02min 03sec)
 	>>> logging.getLogger('jobs').setLevel(logging.INFO)
 	"""
