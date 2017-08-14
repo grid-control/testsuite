@@ -156,6 +156,10 @@ class Test_Refresh:
 	>>> proxy3 = TestRefreshProxy(config1, 30*60, False)
 	>>> try_catch(lambda: proxy3.can_submit(60, True), 'AbstractError', 'is an abstract function')
 	caught
+
+	>>> proxy4 = TestRefreshProxy(config1, -60)
+	>>> try_catch(lambda: proxy4.can_submit(60, True), 'UserError', 'Your access token (myproxy) expired 0h 01min 00sec ago! (Required lifetime: 0h 02min 00sec)')
+	caught
 	"""
 
 
