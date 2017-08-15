@@ -4,8 +4,7 @@ __import__('testfwk').setup(__file__)
 # - prolog marker
 import os, shutil, logging
 from testfwk import create_config, run_test, testfwk_remove_files, try_catch
-from grid_control.backends.backend_tools import BackendDiscovery, BackendExecutor, ProcessCreator, ProcessCreatorViaArguments, ProcessCreatorViaStdin, unpack_wildcard_tar
-from grid_control.utils.process_base import LocalProcess
+from grid_control.backends.backend_tools import BackendDiscovery, ProcessCreator, ProcessCreatorViaArguments, ProcessCreatorViaStdin, unpack_wildcard_tar
 from python_compat import sorted
 
 
