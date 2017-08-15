@@ -5,7 +5,7 @@ __import__('testfwk').setup(__file__)
 from testfwk import run_test, str_dict_testsuite, try_catch
 from grid_control.backends import WMS
 from grid_control.backends.jdl_writer import JDLWriter
-from grid_control.backends.wms_edg import EDGJDL
+from grid_control_usb.wms_edg import EDGJDL
 
 
 jdl = JDLWriter()
