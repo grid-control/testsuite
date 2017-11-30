@@ -103,7 +103,7 @@ class Test_Proxy:
 	('stober', 'stober@DESY.DE', 'DESY.DE', True)
 	>>> logging.getLogger().setLevel(logging.DEFAULT)
 	>>> sorted(lmap(os.path.basename, proxy7.get_auth_fn_list()))
-	['proxy.KRB5CCNAME', 'proxy.KRBTKFILE']
+	['proxy.KRBTKFILE']
 	>>> logging.getLogger().warning(os.environ['KRBTKFILE'])
 	<testsuite dir>/proxy.KRBTKFILE
 	>>> testfwk_remove_files([os.environ['KRBTKFILE']])
@@ -117,7 +117,7 @@ class Test_Proxy:
 	('stober', 'stober@DESY.DE', 'DESY.DE', True)
 	>>> logging.getLogger().setLevel(logging.DEFAULT)
 	>>> sorted(lmap(os.path.basename, proxy8.get_auth_fn_list()))
-	['proxy.KRB5CCNAME', 'proxy.KRBTKFILE']
+	[]
 
 	>>> testfwk_set_path('.')
 	>>> proxy9 = AccessToken.create_instance('AFSProxy', config2, 'myproxy')
