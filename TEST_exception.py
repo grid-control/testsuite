@@ -382,7 +382,7 @@ class Test_Exception:
 	-----
 	In case this is caused by a bug, please send the log file:
 	  '.../debug.log'
-	to grid-control-dev@googlegroups.com
+	to naf-cms-support@desy.de
 	>>> stream.write(open('debug.log').read())
 	-----
 	0000-00-00 00:00:00 - exception:CRITICAL - Exception occured in grid-control...
@@ -399,7 +399,7 @@ class Test_Exception:
 	-----
 	In case this is caused by a bug, please send the log file:
 	  '.../debug.log'
-	to grid-control-dev@googlegroups.com
+	to naf-cms-support@desy.de
 	>>> stream.write(open('debug.log').read())
 	----------------------------------------------------------------------
 	Config instance 0
@@ -440,7 +440,7 @@ class Test_Exception:
 	-----
 	In case this is caused by a bug, please send the log file:
 	  '.../debug.log'
-	to grid-control-dev@googlegroups.com
+	to naf-cms-support@desy.de
 	"""
 
 run_test()
