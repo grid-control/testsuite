@@ -20,21 +20,22 @@ class TestParameterSource(SimpleParameterSource):
 		return self._resyncResult
 
 
-def orderedKeys(keys, showJob = True, showPNum = True):
-	result = lfilter(lambda k: k.value not in ['GC_JOB_ID', 'GC_PARAM'], sorted(keys, key = lambda k: k.value))
+def orderedKeys(keys, showJob=True, showPNum=True):
+	result = lfilter(lambda k: k.value not in ['GC_JOB_ID', 'GC_PARAM'], sorted(keys, key=lambda k: k.value))
 	if showJob:
-		result.extend(ifilter(lambda k: k.value in ['GC_JOB_ID'], sorted(keys, key = lambda k: k.value)))
+		result.extend(ifilter(lambda k: k.value in ['GC_JOB_ID'], sorted(keys, key=lambda k: k.value)))
 	if showPNum:
-		result.extend(ifilter(lambda k: k.value in ['GC_PARAM'], sorted(keys, key = lambda k: k.value)))
+		result.extend(ifilter(lambda k: k.value in ['GC_PARAM'], sorted(keys, key=lambda k: k.value)))
 	return result
 
-def printJobInfo(ps, idx, keys = None, showJobPrefix = True):
+
+def printJobInfo(ps, idx, keys=None, showJobPrefix=True):
 	msg = ''
 	if showJobPrefix:
 		msg = '%d ' % idx
 	info = ps.get_job_content(idx)
 
-	def replace_key(old_key, new_key, format = identity):
+	def replace_key(old_key, new_key, format=identity):
 		if old_key in info:
 			info[new_key.value] = format(info.pop(old_key))
 		if keys and (old_key in keys):
@@ -58,8 +59,9 @@ def printJobInfo(ps, idx, keys = None, showJobPrefix = True):
 			new_keys.append(key.value)
 	return msg + str_dict_testsuite(info, new_keys)
 
-def testPA(pa, showJob = True, showPNum = True, showMetadata = True, showJobPrefix = True,
-		showKeys = True, showUntracked = True, showIV = True, manualKeys = None, newlineEvery = 1):
+
+def testPA(pa, showJob=True, showPNum=True, showMetadata=True, showJobPrefix=True,
+		showKeys=True, showUntracked=True, showIV=True, manualKeys=None, newlineEvery=1):
 	iv = pa.resync()
 	print(pa.get_job_len())
 
@@ -80,12 +82,12 @@ def testPA(pa, showJob = True, showPNum = True, showMetadata = True, showJobPref
 		keys = sorted(ifilter(lambda k: k.lower() in imap(str.lower, manualKeys), pa.get_job_metadata()))
 
 	if pa.get_job_len() == None:
-		print(printJobInfo(pa, 1, keys, showJobPrefix = showJobPrefix))
-		print(printJobInfo(pa, 11, keys, showJobPrefix = showJobPrefix))
+		print(printJobInfo(pa, 1, keys, showJobPrefix=showJobPrefix))
+		print(printJobInfo(pa, 11, keys, showJobPrefix=showJobPrefix))
 	else:
 		msg = []
 		for jobnum in irange(pa.get_job_len()):
-			msg.append(printJobInfo(pa, jobnum, keys, showJobPrefix = showJobPrefix))
+			msg.append(printJobInfo(pa, jobnum, keys, showJobPrefix=showJobPrefix))
 			if jobnum % newlineEvery == (newlineEvery - 1):
 				msg.append('\n')
 			else:
@@ -98,26 +100,31 @@ def testPA(pa, showJob = True, showPNum = True, showMetadata = True, showJobPref
 		else:
 			print(str(iv))
 
+
 def display_ps_str2ps_str(ps_str):
 	for surrogate in ['ZIP', 'RANGE']:
 		ps_str = ps_str.replace(surrogate, surrogate.lower())
 	return ps_str
+
 
 def ps_str2display_ps_str(ps_str):
 	for surrogate in ['ZIP', 'RANGE']:
 		ps_str = ps_str.replace(surrogate.lower(), surrogate)
 	return ps_str
 
+
 def norm_ps_display(ps):
 	print(ps_str2display_ps_str(repr(ps)))
 
-def testPS(ps, showJob = False, showHash = True, showPS = True):
+
+def testPS(ps, showJob=False, showHash=True, showPS=True):
 	if showPS:
 		norm_ps_display(ps)
 	if showHash:
 		print(ps.get_psrc_hash() or '<no hash>')
 	pa = ParameterAdapter(create_config(), ps)
-	testPA(pa, showJob = showJob)
+	testPA(pa, showJob=showJob)
+
 
 def updateDS(data_raw, modstr):
 	DataProvider.save_to_file('dataset.tmp', modDS(data_raw, modstr))

@@ -18,24 +18,28 @@ def display_jobs(wms, gc_id_list):
 
 class Test_Storage:
 	"""
-	>>> sm = StorageManager(create_config(), 'name_test', 'se', 'se output', 'SE_OUT')
+	>>> sm = StorageManager(create_config(), 'test', 'se', 'se output')
 	>>> sm.do_transfer([])
 	>>> sm.get_dependency_list()
 	[]
-	>>> sm_sb = StorageManager.create_instance('LocalSBStorageManager', create_config(), 'name_test', 'sb', 'sb output', 'SE_OUT')
+	>>> sm.get_process([])
+	(';', [])
+	>>> sm_sb = StorageManager.create_instance('LocalSBStorageManager', create_config(), 'test', 'sb', 'sb output')
 	>>> try_catch(lambda: sm_sb.do_transfer([('desc', '/tmp/GC_TEST_FILE', 'GC_TEST_FILE')]), 'StorageError', 'Unable to transfer desc')
 	caught
 
-	>>> sm_se1 = StorageManager.create_instance('SEStorageManager', create_config(), 'test', 'se', 'se output', 'SE_OUT')
+	>>> sm_se1 = StorageManager.create_instance('SEStorageManager', create_config(), 'test', 'se', 'se output')
 	>>> sm_se1.get_dependency_list()
 	[]
-	>>> try_catch(lambda: sm_se1.do_transfer([('dest', 'dummy', 'dummy')]), 'ConfigError', 'transferred because')
+	>>> try_catch(lambda: sm_se1.do_transfer([('dest', 'dummy', 'dummy')]), 'ConfigError', 'transferred because se output')
 	caught
 
 	>>> se_config = create_config(config_dict={'storage': {'se path': 'srm://host/dir'}})
 	>>> se_config.get('access token', '')
 	''
-	>>> sm_se2 = StorageManager.create_instance('SEStorageManager', se_config, 'test', 'se', 'se output', 'SE_OUT')
+	>>> sm_se2 = StorageManager.create_instance('SEStorageManager', se_config, 'test', 'se', 'se output')
+	>>> se_config.get('access token', '')
+	'\\nVomsProxy'
 	>>> sm_se2.get_dependency_list()
 	['glite']
 	"""
@@ -70,7 +74,6 @@ class Test_MultiWMS:
 	Using batch system: ---
 
 	>>> hm = WMS.create_instance('MultiWMS', create_config(), 'multiwms', [h1, h2, h3])
-	Broker discovered 3 wms
 	>>> (at1 == at2, at1 == at3)
 	(False, False)
 	>>> hm.get_access_token('WMSID.HOST1.123') == at1

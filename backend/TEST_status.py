@@ -14,17 +14,13 @@ testfwk_set_path('../bin')
 def test_check(plugin, src='/dev/null', src_err='/dev/null', src_ret=0, wms_id_list=None, overwrite_exec=None, do_print=True, config_dict=None, **kwargs):
 	config = create_config(config_dict=config_dict or {})
 	check_executor = CheckJobs.create_instance(plugin, config, **kwargs)
-	check_executor.setup(logging.getLogger())
+	executor = ChunkedExecutor(config, 'status', check_executor)
+	executor.setup(logging.getLogger())
 	if overwrite_exec:
 		check_executor._proc_factory._cmd = overwrite_exec
 	os.environ['GC_TEST_FILE'] = src
 	os.environ['GC_TEST_ERR'] = src_err
 	os.environ['GC_TEST_RET'] = str(src_ret)
-	if wms_id_list:
-		executor = ChunkedExecutor(config, 'status', check_executor)
-		executor.setup(logging.getLogger())
-	else:
-		executor = check_executor
 	for wms_id, jobStatus, jobInfo in executor.execute(wms_id_list or []):
 		for key in list(jobInfo):
 			if isinstance(key, int):
