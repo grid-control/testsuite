@@ -23,8 +23,8 @@ def create_matcher(name):
 
 random.randint = lambda *args: 42 # 100% randomly choosen
 
-regex_transform_dict = {r'(.*)': r'X\1Y', r'X1(.*)': r'XX\1', r'.56': r'555'}
-regex_transform_list = [r'.56', r'(.*)', r'X1(.*)']
+regex_transform_dict = {r'(.+)': r'X\1Y', r'X1(.*)': r'XX\1', r'.56': r'555'}
+regex_transform_list = [r'.56', r'(.+)', r'X1(.*)']
 
 class Test_ParameterSource:
 	"""
@@ -162,8 +162,8 @@ class Test_BasicParameterSource:
 	... [{'A': '123'}, {'A': '456'}], [ParameterMetadata('A')])
 	>>> pt = ParameterSource.create_instance('RegexTransformParameterSource', 'B', 'A', regex_transform_dict, regex_transform_list)
 	>>> testPS(ParameterSource.create_instance('ZipLongParameterSource', p1, pt))
-	ZIP(<internal:A=9a2e48d982bf187dd20f084b3f2c68e9>, regex_transform('B', 'A', "(.*) = 'X\\\\\\\\1Y', .56 = '555', X1(.*) = 'XX\\\\\\\\1'"))
-	28b0e788ba880044db755dffdcdfde0f
+	ZIP(<internal:A=9a2e48d982bf187dd20f084b3f2c68e9>, regex_transform('B', 'A', "(.+) = 'X\\\\\\\\1Y', .56 = '555', X1(.*) = 'XX\\\\\\\\1'"))
+	7c95e250a2d75af3f3e663848de6c70f
 	2
 	Keys = A [trk], B, GC_PARAM
 	0 {'<ACTIVE>': True, '<REQS>': [], 'A': '123', '!B': 'X123Y', '!GC_PARAM': 0}
