@@ -82,7 +82,7 @@ echo 'travis_fold:start:testsuite_basic'
 travis_run ./testsuite/TEST_activity.py
 travis_run ./testsuite/TEST_debug.py
 travis_run ./testsuite/TEST_eventhandler.py
-# travis_run ./testsuite/TEST_exception.py
+travis_run ./testsuite/TEST_exception.py
 travis_run ./testsuite/TEST_go.py
 travis_run ./testsuite/TEST_gui.py
 travis_run ./testsuite/TEST_jobdb.py

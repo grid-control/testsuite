@@ -31,6 +31,7 @@ def modify_log(lines):
 		line = re.sub(r'\[(.*\.py):\d*\]', r'[\1:<lineno>]', line)
 		line = re.sub(r'T(.*) (.*) (\d*) (.*)', r'T\1 \2 <lineno> \4', line)
 		line = re.sub(r'Exception occured in grid-control \[\d+.*\]', 'Exception occured in grid-control...', line)
+		line = re.sub(r'Exception occured in grid-control \[git .+\]', 'Exception occured in grid-control...', line)
 		if 'invalid syntax' in line:
 			line = re.sub('invalid syntax.*', 'invalid syntax <details>', line)
 		line = re.sub('ZeroDivisionError:.*', 'ZeroDivisionError: <details>', line)
