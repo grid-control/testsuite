@@ -253,6 +253,7 @@ class TestsuiteStream(object):
 			value = value.replace('\n', '<newline>\n')
 		value = value.replace('IOError', 'XXError')
 		value = value.replace('OSError', 'XXError')
+		value = value.replace('BadGzipFile', 'XXError')
 		value = value.replace('python_compat', 'py_th_on_com_pat')
 		value = value.replace(os.environ['GC_TESTSUITE_BASE'], '<testsuite dir>')
 		value = value.replace(os.environ['GC_PACKAGES_PATH'], '<gc package dir>')
