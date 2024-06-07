@@ -16,7 +16,7 @@ travis_run() {
 	fi
 }
 
-echo 'travis_fold:start:testsuite_backend'
+echo '##[group]testsuite_backend'
 travis_run ./testsuite/backend/TEST_backend.py
 travis_run ./testsuite/backend/TEST_basic.py
 travis_run ./testsuite/backend/TEST_cancel.py
@@ -24,9 +24,9 @@ travis_run ./testsuite/backend/TEST_discover.py
 travis_run ./testsuite/backend/TEST_jdl.py
 travis_run ./testsuite/backend/TEST_proxy.py
 travis_run ./testsuite/backend/TEST_status.py
-echo 'travis_fold:end:testsuite_backend'
+echo '##[endgroup]'
 
-echo 'travis_fold:start:testsuite_cms'
+echo '##[group]testsuite_cms'
 travis_run ./testsuite/cms/TEST_cms_cert.py
 travis_run ./testsuite/cms/TEST_cmssw.py
 travis_run ./testsuite/cms/TEST_cmssw_scanner.py
@@ -36,9 +36,9 @@ travis_run ./testsuite/cms/TEST_lumitools.py
 # travis_run ./testsuite/cms/TEST_provider_cms.py
 # travis_run ./testsuite/cms/TEST_provider_das.py
 # travis_run ./testsuite/cms/TEST_sitedb.py
-echo 'travis_fold:end:testsuite_cms'
+echo '##[endgroup]'
 
-echo 'travis_fold:start:testsuite_config'
+echo '##[group]testsuite_config'
 travis_run ./testsuite/config/TEST_configAPI1.py
 travis_run ./testsuite/config/TEST_configAPI2.py
 travis_run ./testsuite/config/TEST_configAPI3.py
@@ -52,9 +52,9 @@ travis_run ./testsuite/config/TEST_configTyped.py
 travis_run ./testsuite/config/TEST_configView.py
 travis_run ./testsuite/config/TEST_interactive.py
 travis_run ./testsuite/config/TEST_matcher.py
-echo 'travis_fold:end:testsuite_config'
+echo '##[endgroup]'
 
-echo 'travis_fold:start:testsuite_datasets'
+echo '##[group]testsuite_datasets'
 travis_run ./testsuite/datasets/TEST_dataresync1.py
 travis_run ./testsuite/datasets/TEST_dataresync2.py
 travis_run ./testsuite/datasets/TEST_dataresync3.py
@@ -67,18 +67,18 @@ travis_run ./testsuite/datasets/TEST_provider.py
 travis_run ./testsuite/datasets/TEST_scanner.py
 travis_run ./testsuite/datasets/TEST_splitterio.py
 travis_run ./testsuite/datasets/TEST_splitter.py
-echo 'travis_fold:end:testsuite_datasets'
+echo '##[endgroup]'
 
-echo 'travis_fold:start:testsuite_parameters'
+echo '##[group]testsuite_parameters'
 travis_run ./testsuite/parameters/TEST_config_param.py
 travis_run ./testsuite/parameters/TEST_padapter1.py
 travis_run ./testsuite/parameters/TEST_padapter.py
 travis_run ./testsuite/parameters/TEST_pfactory.py
 travis_run ./testsuite/parameters/TEST_pproc.py
 travis_run ./testsuite/parameters/TEST_psource.py
-echo 'travis_fold:end:testsuite_parameters'
+echo '##[endgroup]'
 
-echo 'travis_fold:start:testsuite_basic'
+echo '##[group]testsuite_basic'
 travis_run ./testsuite/TEST_activity.py
 travis_run ./testsuite/TEST_debug.py
 travis_run ./testsuite/TEST_eventhandler.py
@@ -96,12 +96,12 @@ travis_run ./testsuite/TEST_task.py
 travis_run ./testsuite/TEST_taskresync.py
 travis_run ./testsuite/TEST_utils.py
 # travis_run ./testsuite/TEST_webservice.py
-echo 'travis_fold:end:testsuite_basic'
+echo '##[endgroup]'
 
-echo 'travis_fold:start:testsuite_ansi'
+echo '##[group]testsuite_ansi'
 export GC_TERM=dumb; travis_run ./testsuite/TEST_ansi.py
 export GC_TERM=gc_color16; travis_run ./testsuite/TEST_ansi.py
 export GC_TERM=gc_color256; travis_run ./testsuite/TEST_ansi.py
-echo 'travis_fold:end:testsuite_ansi'
+echo '##[endgroup]'
 
 exit $GC_RESULT
