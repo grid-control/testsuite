@@ -3,7 +3,7 @@ __import__('sys').path.append(__import__('os').path.join(__import__('os').path.d
 __import__('testfwk').setup(__file__)
 # - prolog marker
 import os
-from testfwk import TestsuiteStream, create_config, run_test, try_catch
+from testfwk import TestsuiteStream, create_config, run_test, testfwk_set_path, try_catch
 from grid_control.datasets import DataProvider, DataSplitter
 from web_replay import replay_start
 
@@ -26,6 +26,7 @@ def get(provider, ds, cfg={}):
 
 class Test_CMSProvider:
 	"""
+	>>> testfwk_set_path('../bin')
 	>>> try_catch(DataProvider.create_instance('CMSBaseProvider', create_config(), 'dataset', '*').get_dataset_name_list, 'AbstractError', 'is an abstract function')
 	caught
 
