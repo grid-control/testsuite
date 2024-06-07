@@ -19,7 +19,7 @@ except Exception:
 def response_filter(response):
 	response.pop('origin')
 	header = response['headers']
-	for key in ['Accept-Encoding', 'Connect-Time', 'User-Agent', 'X-Request-Id', 'Total-Route-Time', 'Via', 'Connection']:
+	for key in ['Accept-Encoding', 'X-Amzn-Trace-Id', 'Connect-Time', 'User-Agent', 'X-Request-Id', 'Total-Route-Time', 'Via', 'Connection']:
 		header.pop(key, None)
 	return response
 

@@ -95,7 +95,7 @@ travis_run ./testsuite/TEST_report.py
 travis_run ./testsuite/TEST_task.py
 travis_run ./testsuite/TEST_taskresync.py
 travis_run ./testsuite/TEST_utils.py
-# travis_run ./testsuite/TEST_webservice.py
+travis_run ./testsuite/TEST_webservice.py
 echo '##[endgroup]'
 
 echo '##[group]testsuite_ansi'
