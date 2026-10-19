@@ -395,7 +395,7 @@ class Test_Utils:
 	>>> utils.split_opt('abc', [':', ':'])
 	('abc', '', '')
 
-	>>> try_catch(lambda: utils.ensure_dir_exists('/root/.grid-control'), 'PathError', 'Problem creating')
+	>>> try_catch(lambda: utils.ensure_dir_exists('/proc/sys/test-grid-control-should-not-be-writable'), 'PathError', 'Problem creating')
 	caught
 
 	>>> utils.Result(key = 'value')
