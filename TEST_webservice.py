@@ -58,33 +58,33 @@ class Test_JSONRestClient:
 	>>> r0 = response_filter(jrc0.get())
 	>>> cmp_obj(r0, {'headers': {'Accept': 'application/json',
 	...    'Host': 'httpbin.org', 'Content-Type': 'application/json'},
-	...    'args': {}, 'url': 'https://httpbin.org/get'})
+	...    'args': {}, 'url': 'https://httpbin.org/get', 'method': 'GET'})
 	>>> jrc = JSONRestClient()
 	>>> r1 = response_filter(jrc.get('https://httpbin.org/get'))
 	>>> r1 = response_filter(jrc.get('https://httpbin.org/get'))
 	>>> cmp_obj(r1, {'headers': {'Accept': 'application/json',
 	...    'Host': 'httpbin.org', 'Content-Type': 'application/json'},
-	...    'args': {}, 'url': 'https://httpbin.org/get'})
+	...    'args': {}, 'url': 'https://httpbin.org/get', 'method': 'GET'})
 	>>> r2 = response_filter(jrc.get('https://httpbin.org', 'get', {'header': 'test'}, {'key': 'value'}))
 	>>> cmp_obj(r2, {'headers': {'Accept': 'application/json',
 	...    'Host': 'httpbin.org', 'Content-Type': 'application/json', 'Header': 'test'},
-	...    'args': {'key': 'value'}, 'url': 'https://httpbin.org/get?key=value'})
+	...    'args': {'key': 'value'}, 'url': 'https://httpbin.org/get?key=value', 'method': 'GET'})
 	>>> r3 = response_filter(jrc.post('https://httpbin.org', 'post', data = {'test': 'value'}))
 	>>> cmp_obj(r3, {'headers': {'Accept': 'application/json',
 	...    'Host': 'httpbin.org', 'Content-Type': 'application/json', 'Content-Length': '17'},
 	...    'files': {}, 'form': {}, 'url': 'https://httpbin.org/post', 'args': {},
-	...    'json': {'test': 'value'}, 'data': '{"test": "value"}'})
+	...    'json': {'test': 'value'}, 'data': '{"test": "value"}', 'method': 'POST'})
 	>>> r4 = response_filter(jrc.put('https://httpbin.org', 'put', data = {'test': 'value'}))
 	>>> cmp_obj(r4, {'headers': {'Accept': 'application/json',
 	...    'Host': 'httpbin.org', 'Content-Type': 'application/json', 'Content-Length': '17'},
 	...    'files': {}, 'form': {}, 'url': 'https://httpbin.org/put', 'args': {},
-	...    'json': {'test': 'value'}, 'data': '{"test": "value"}'})
+	...    'json': {'test': 'value'}, 'data': '{"test": "value"}', 'method': 'PUT'})
 	>>> r5 = response_filter(jrc.delete('https://httpbin.org', 'delete', params = {'key': 'value'}))
 	>>> dummy = r5['headers'].pop('Content-Length', None)
 	>>> cmp_obj(r5, {'headers': {'Accept': 'application/json',
 	...    'Host': 'httpbin.org', 'Content-Type': 'application/json'},
 	...    'files': {}, 'form': {}, 'url': 'https://httpbin.org/delete?key=value', 'args': {'key': 'value'},
-	...    'json': None, 'data': ''})
+	...    'json': None, 'data': '', 'method': 'DELETE'})
 	>>> try_catch(lambda: jrc.get('https://httpbin.org/getx'), 'RestError', 'Unable to query')
 	caught
 	>>> try_catch(lambda: jrc.get('https://httpbin.org/html'), 'RestError', 'Received invalid JSON reply')
