@@ -127,19 +127,19 @@ class Test_CompatEventHandler:
 	local event handler += scripts
 	-----
 
-	>>> config = create_config(config_dict={'global': {'monitor': 'dashboard scripts'}})
+	>>> config = create_config(config_dict={'global': {'monitor': 'null scripts'}})
 	>>> tmp = CompatEventHandlerManager(config)
 	>>> config.write(TestsuiteStream(), print_default=False)
 	[backend!]
-	remote event handler += dashboard
+	remote event handler += null
 	-----
 	[global]
 	monitor =
-	  dashboard
+	  null
 	  scripts
 	-----
 	[jobs!]
-	local event handler += dashboard
+	local event handler += null
 	local event handler += scripts
 	-----
 	"""
